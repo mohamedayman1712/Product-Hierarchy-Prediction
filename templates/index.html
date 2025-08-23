@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>Items tree prediction</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='11.png') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: 'Tahoma', sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px;
+        }
+        h1, h2 { color: #ffffff; }
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.6);
+        }
+        input[type=text] {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #2b2b2b;
+            color: #fff;
+        }
+        input[type=text]::placeholder { color: #aaa; }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+
+        table {
+            margin: 30px auto;
+            border-collapse: collapse;
+            width: 95%;
+            max-width: 800px;
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.6);
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 12px;
+            color: #ddd;
+            text-align: center;
+        }
+        th { background: #007bff; color: white; }
+        tr:nth-child(even) { background: #2b2b2b; }
+        tr:nth-child(odd) { background: #1a1a1a; }
+
+        /* progress bar */
+        .progress-container {
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 22px;
+            width: 100%;
+            max-width: 140px;
+            margin: auto;
+        }
+        .progress-bar {
+            height: 100%;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 22px;
+            width: 0%; /* يبدأ من 0 */
+            transition: width 1s ease-in-out; /* حركة سلسة */
+        }
+        .btn-home {
+            display: inline-block;
+            margin: 30px 0;
+            padding: 12px 25px;
+            background: #1e7e34;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn-home:hover {
+            background:#18692b;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 500px) {
+            body { padding: 10px; }
+            input[type=text] { width: 95%; }
+            button { width: 95%; }
+            table { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔎 تنبوء بشجرة الاصناف</h1>
+    <form method="post">
+        <input type="text" name="user_text" placeholder="اكتب اسم الصنف هنا..." value="{{ user_input }}" required>
+        <br>
+        <button type="submit">تنبؤ</button>
+    </form>
+
+    {% if results %}
+    <h2>:أفضل {{ results|length }} احتمالات </h2>
+    <table>
+        <tr>
+           <!-- <th>الـ ID</th> -->
+            <th>الصنف</th>
+            <th>الكلاس</th>
+            <th>السيكشن</th>
+            <th>المجموعة</th>
+            <th>المجموعة الفرعية</th>
+            <th>النسبة</th>
+        </tr>
+        {% for r in results %}
+        <tr>
+            <td>{{ user_input }}</td> 
+            <td>{{ r.class }}</td>
+            <td>{{ r.section }}</td>
+            <td>{{ r.group }}</td>
+            <td>{{ r.subgroup }}</td>
+            <td>
+                <div class="progress-container" title="{{ r.probability }}">
+                    <div class="progress-bar"
+                         style="width: {{ r.probability|replace('%','') }}%;
+                                background-color: {% if r.probability|replace('%','')|float > 70 %}#28a745
+                                                  {% elif r.probability|replace('%','')|float > 40 %}#ffc107
+                                                  {% else %}#dc3545{% endif %};">
+                        {{ r.probability }}
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+<a href="/" class="btn-home">🏠 رجوع للصفحة الرئيسية</a>
+    <!-- Animation script -->
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const bars = document.querySelectorAll('.progress-bar');
+            bars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = targetWidth; }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

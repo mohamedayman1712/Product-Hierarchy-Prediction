@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>upload</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='upload-svgrepo-com.png') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { background: #121212; color: #fff; text-align: center; font-family: Tahoma; }
+        form { margin: 30px auto; padding: 20px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 400px; }
+        input, button { margin: 10px; padding: 10px; border-radius: 8px; }
+        button { background: #007bff; border: none; color: #fff; cursor: pointer; }
+        button:hover { background: #0056b3; }
+
+        .btn-home {
+            display: inline-block;
+            margin: 30px 0;
+            padding: 12px 25px;
+            background: #1e7e34;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background 0.3s;
+            
+        }
+        .btn-home:hover {
+    background: #18692b;   /* لون أغمق شوية من الأساسي */
+}
+
+        /* ✅ Responsive Table with Sticky Header */
+        .table-container {
+            max-height: 400px;   
+            overflow-y: auto;    
+            margin: 20px auto;
+            width: 95%;
+            max-width: 1000px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.6);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #1e1e1e;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        tr:nth-child(even) { background: #2a2a2a; }
+        tr:hover { background: #333; }
+
+        /* ✅ Loader Overlay */
+        .loader-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            font-size: 18px;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ✅ Search Bar */
+        .search-box {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #1e1e1e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>📂 رفع ملف للتنبؤ</h1>
+
+    <!-- Loader -->
+    <div id="loader" class="loader-overlay" style="display: none;">
+        <div class="loader"></div>
+        <p>⏳ جاري معالجة البيانات ...</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <br>
+        <button type="submit">رفع ومعالجة</button>
+    </form>
+
+    {% if results is not none %}
+    <h2>✅ النتائج:</h2>
+
+    <!-- ✅ Search Bar -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 ابحث في النص المدخل ...">
+    </div>
+
+    <div class="table-container">
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>النص المدخل</th>
+                    <th>الكلاس</th>
+                    <th>السيكشن</th>
+                    <th>المجموعة</th>
+                    <th>المجموعة الفرعية</th>
+                    <th>النسبة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results.to_dict(orient='records') %}
+                <tr>
+                    <td>{{ r.input_text }}</td>
+                    <td>{{ r.class }}</td>
+                    <td>{{ r.section }}</td>
+                    <td>{{ r.group }}</td>
+                    <td>{{ r.subgroup }}</td>
+                    <td>{{ r.probability }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/download"><button>⬇️ تحميل النتائج Excel</button></a>
+    {% endif %}
+
+    <script>
+        // ✅ Loader يظهر عند رفع الملف
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function() {
+            document.getElementById("loader").style.display = "flex";
+        });
+
+        // ✅ Search function
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.addEventListener("keyup", function() {
+                const filter = searchInput.value.toLowerCase();
+                const rows = document.querySelectorAll("#resultsTable tbody tr");
+                rows.forEach(row => {
+                    const text = row.cells[0].textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? "" : "none";
+                });
+            });
+        }
+    </script>
+
+    <a href="/" class="btn-home">🏠 رجوع للصفحة الرئيسية</a>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+     <link rel="icon" type="image/png" href="{{ url_for('static', filename='home-1-svgrepo-com.png') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            background: #121212; 
+            color: #fff; 
+            font-family: Tahoma; 
+            text-align: center; 
+            padding: 50px; 
+        }
+        h1 { margin-bottom: 30px; }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+        }
+        .btn:hover { background: #0056b3; }
+        img {
+            width: 300px;
+            margin: 20px 0;
+            max-width: 200px;
+            border-radius: 12px;
+            height: auto;
+            /*box-shadow: 0px 4px 12px rgba(0,0,0,0.4);*/
+        }
+    </style>
+</head>
+<body>
+    <h1> ⭐ أهلا بيك في نظام التنبؤ</h1>
+  <div><!-- الصورة في النص -->
+    <img src="{{ url_for('static', filename='pair-of-cards-svgrepo-com.png') }}" alt="Welcome Image">
+    </div>
+    
+    <a href="/manual" class="btn">🔎 إدخال يدوي (Top 3)</a>
+    <a href="/upload" class="btn">📂 رفع ملف (Top 1)</a>
+  
+</body>
+</html>
